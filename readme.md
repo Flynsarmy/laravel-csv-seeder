@@ -12,10 +12,6 @@ Require this package in your composer.json and run composer update (or run `comp
 
     "flynsarmy/csv-seeder": "1.*"
 
-After updating composer, add the ServiceProvider to the providers array in app/config/app.php
-
-    'Flynsarmy\CsvSeeder\CsvSeederServiceProvider',
-
 
 ### Usage
 
@@ -33,6 +29,9 @@ Seed classes must extend `Flynsarmy\CsvSeeder\CsvSeeder`, they must define the d
 
 		public function run()
 		{
+			// Recommended when importing larger CSVs
+			DB::disableQueryLog();
+
 			// Uncomment the below to wipe the table clean before populating
 			DB::table($this->table)->truncate();
 

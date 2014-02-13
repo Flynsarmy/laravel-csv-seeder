@@ -1,5 +1,6 @@
 <?php namespace Flynsarmy\CsvSeeder;
 
+use Log;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -32,7 +33,7 @@ class CsvSeeder extends Seeder
 	 *
 	 * @var integer
 	 */
-	protected $insert_chunk_size = 100;
+	protected $insert_chunk_size = 50;
 
 	/**
 	 * CSV delimiter (defaults to ,)
@@ -99,7 +100,12 @@ class CsvSeeder extends Seeder
 
 	private function run_insert( array $seedData )
 	{
-		DB::table($this->table)->insert($seedData);
+		try {
+			DB::table($this->table)->insert($seedData);
+		} catch (\Exception $e) {
+			Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
+		}
+
 	}
 
 }
