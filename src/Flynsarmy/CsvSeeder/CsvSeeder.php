@@ -53,6 +53,20 @@ class CsvSeeder extends Seeder
 	}
 
 	/**
+	 * Strip UTF-8 BOM characters from the start of a string
+	 *
+	 * @param  string $text
+	 *
+	 * @return string       String with BOM stripped
+	 */
+	private function strip_utf8_bom( $text )
+	{
+		$bom = pack('H*','EFBBBF');
+		$text = preg_replace("/^$bom/", '', $text);
+		return $text;
+	}
+
+	/**
 	 * Collect data from a given CSV file and return as array
 	 *
 	 * @param $filename
@@ -73,7 +87,10 @@ class CsvSeeder extends Seeder
 			while ( ($row = fgetcsv($handle, 0, $deliminator)) !== FALSE )
 			{
 				if ( !$header )
+				{
 					$header = $row;
+					$header[0] = $this->strip_utf8_bom($header[0]);
+				}
 				else
 				{
 					$data[] = array_combine($header, $row);

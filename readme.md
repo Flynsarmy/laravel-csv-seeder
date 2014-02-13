@@ -10,7 +10,7 @@ This package allows CSV based seeds.
 
 Require this package in your composer.json and run composer update (or run `composer require flynsarmy/csv-seeder:1.*` directly):
 
-    "flynsarmy/csv-seeder": "1.*"
+    "flynsarmy/csv-seeder": "1.0.*"
 
 
 ### Usage
