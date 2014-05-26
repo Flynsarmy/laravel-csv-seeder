@@ -3,6 +3,7 @@
 use Log;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Taken from http://laravelsnippets.com/snippets/seeding-database-with-csv-files-cleanly
@@ -25,7 +26,15 @@ class CsvSeeder extends Seeder
 	 */
 	protected $filename;
 
-
+	/**
+	 * DB field that to be hashed, most likely a password field. 
+	 * If your password has a different name, please overload this 
+	 * variable from our seeder class.
+	 * 
+	 * @var string
+	 */
+	
+	protected $hashable = 'password';
 	/**
 	 * An SQL INSERT query will execute every time this number of rows
 	 * are read from the CSV. Without this, large INSERTS will silently
@@ -93,7 +102,13 @@ class CsvSeeder extends Seeder
 				}
 				else
 				{
-					$data[] = array_combine($header, $row);
+				  
+				  //Hash hashable field if it exists
+				  $row = array_combine($header, $row);
+				  if(isset($row[$this->hashable])){
+				    $row[$this->hashable] =  Hash::make($row[$this->hashable]);
+				  }
+					$data[] = $row;
 
 					// Chunk size reached, insert
 					if ( ++$row_count == $this->insert_chunk_size )
