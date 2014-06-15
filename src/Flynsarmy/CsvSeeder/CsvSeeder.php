@@ -94,29 +94,38 @@ class CsvSeeder extends Seeder
 		if ( ($handle = fopen($filename, 'r')) !== FALSE )
 		{
 			while ( ($row = fgetcsv($handle, 0, $deliminator)) !== FALSE )
-			{
+            {
+
 				if ( !$header )
 				{
 					$header = $row;
 					$header[0] = $this->strip_utf8_bom($header[0]);
 				}
 				else
-				{
-				  
-				  //Hash hashable field if it exists
-				  $row = array_combine($header, $row);
-				  if(isset($row[$this->hashable])){
-				    $row[$this->hashable] =  Hash::make($row[$this->hashable]);
-				  }
-					$data[] = $row;
+                {
+                    // insert only non-empty fields from the csv file
+                    $i = 0;
+                    $row_values = [];
 
-					// Chunk size reached, insert
-					if ( ++$row_count == $this->insert_chunk_size )
-					{
-						$this->run_insert($data);
-						$data = array();
-						$row_count = 0;
-					}
+                    foreach ($header as $key) {
+                        if (!empty($row[$i])) {
+                            $row_values[$key] = $row[$i];
+                        }
+                        $i++;
+                    }
+
+                    if(isset($row_values[$this->hashable])){
+                        $row_values[$this->hashable] =  Hash::make($row_values[$this->hashable]);
+                    }
+
+                    $data[$row_count] = $row_values;
+
+                    // Chunk size reached, insert
+                    if ( ++$row_count == $this->insert_chunk_size )
+                    {
+                        $this->run_insert($data);
+                        $row_count = 0;
+                    }
 				}
 			}
 
