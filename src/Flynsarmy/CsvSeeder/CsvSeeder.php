@@ -125,12 +125,15 @@ class CsvSeeder extends Seeder
                     {
                         $this->run_insert($data);
                         $row_count = 0;
+                        //clear the data array explicitly when it was inserted so that nothing is left, otherwise a leftover scenario can cause duplicate inserts
+	                $data = array();
                     }
 				}
 			}
 
 			// Insert any leftover rows
-			if ( $row_count )
+			//check if the data array explicitly if there are any values left to be inserted, if insert them
+			if ( count($data) > 0  )
 				$this->run_insert($data);
 
 			fclose($handle);
