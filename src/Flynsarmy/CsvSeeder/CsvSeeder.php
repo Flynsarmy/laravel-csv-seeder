@@ -109,10 +109,11 @@ class CsvSeeder extends Seeder
 
                     foreach ($header as $key) {
                         if ($row[$i] === '') {
-                            Log::info($row[$i]);
+                            Log::info('null' . $row[$i]);
                             $row_values[$key] = NULL;
                         }
                         else {
+                            Log::info('not null: ' . $row[$i]);
                             $row_values[$key] = $row[$i];
                         }
                         $i++;
