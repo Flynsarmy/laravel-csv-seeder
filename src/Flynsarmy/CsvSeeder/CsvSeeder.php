@@ -27,14 +27,15 @@ class CsvSeeder extends Seeder
 	protected $filename;
 
 	/**
-	 * DB field that to be hashed, most likely a password field. 
-	 * If your password has a different name, please overload this 
+	 * DB field that to be hashed, most likely a password field.
+	 * If your password has a different name, please overload this
 	 * variable from our seeder class.
-	 * 
+	 *
 	 * @var string
 	 */
-	
+
 	protected $hashable = 'password';
+
 	/**
 	 * An SQL INSERT query will execute every time this number of rows
 	 * are read from the CSV. Without this, large INSERTS will silently
@@ -84,7 +85,7 @@ class CsvSeeder extends Seeder
 	 */
 	private function seedFromCSV($filename, $deliminator = ",")
 	{
-		if( !file_exists($filename) || !is_readable($filename) )
+		if ( !file_exists($filename) || !is_readable($filename) )
 			return FALSE;
 
 		$header = NULL;
@@ -94,7 +95,7 @@ class CsvSeeder extends Seeder
 		if ( ($handle = fopen($filename, 'r')) !== FALSE )
 		{
 			while ( ($row = fgetcsv($handle, 0, $deliminator)) !== FALSE )
-            {
+			{
 
 				if ( !$header )
 				{
@@ -102,38 +103,38 @@ class CsvSeeder extends Seeder
 					$header[0] = $this->strip_utf8_bom($header[0]);
 				}
 				else
-                {
-                    // insert only non-empty fields from the csv file
-                    $i = 0;
-                    $row_values = [];
+				{
+					// insert only non-empty fields from the csv file
+					$i = 0;
+					$row_values = [];
 
-                    foreach ($header as $key) {
-                        if ($row[$i] === '') {
-                            $row_values[$key] = NULL;
-                        }
-                        else {
-                            $row_values[$key] = $row[$i];
-                        }
-                        $i++;
-                    }
+					foreach ($header as $key) {
+						if (!empty($row[$i])) {
+							$row_values[$key] = $row[$i];
+						}
+						$i++;
+					}
 
-                    if(isset($row_values[$this->hashable])){
-                        $row_values[$this->hashable] =  Hash::make($row_values[$this->hashable]);
-                    }
+					if(isset($row_values[$this->hashable])){
+						$row_values[$this->hashable] =  Hash::make($row_values[$this->hashable]);
+					}
 
-                    $data[$row_count] = $row_values;
+					$data[$row_count] = $row_values;
 
-                    // Chunk size reached, insert
-                    if ( ++$row_count == $this->insert_chunk_size )
-                    {
-                        $this->run_insert($data);
-                        $row_count = 0;
-                    }
+					// Chunk size reached, insert
+					if ( ++$row_count == $this->insert_chunk_size )
+					{
+						$this->run_insert($data);
+						$row_count = 0;
+						//clear the data array explicitly when it was inserted so that nothing is left, otherwise a leftover scenario can cause duplicate inserts
+						$data = array();
+					}
 				}
 			}
 
 			// Insert any leftover rows
-			if ( $row_count )
+			//check if the data array explicitly if there are any values left to be inserted, if insert them
+			if ( count($data)  )
 				$this->run_insert($data);
 
 			fclose($handle);
