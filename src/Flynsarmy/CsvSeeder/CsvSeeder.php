@@ -1,9 +1,12 @@
-<?php namespace Flynsarmy\CsvSeeder;
+<?php
+
+namespace Flynsarmy\CsvSeeder;
 
 use Log;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 /**
  * Taken from http://laravelsnippets.com/snippets/seeding-database-with-csv-files-cleanly
@@ -96,6 +99,8 @@ class CsvSeeder extends Seeder {
         $row_count = 0;
         $data = array();
 
+        $now = Carbon::now()->toDateTimeString();
+
         if (($handle = $file_is_gzipped ? popen("gzip -cd " . $filename, 'r') : fopen($filename, 'r')) !== FALSE) {
             Log::info('reading file ' . $filename);
             while (($row = fgetcsv($handle, 0, $deliminator)) !== FALSE) {
@@ -115,8 +120,8 @@ class CsvSeeder extends Seeder {
                     foreach ($header as $key) {
                         if ($i >= count($row)) {
                             if ($this->timestamps) {
-                                $row_values['created_at'] = 'NOW()';
-                                $row_values['updated_at'] = 'NOW()';
+                                $row_values['created_at'] = $now;
+                                $row_values['updated_at'] = $now;
                             }
                         }
                         else {
@@ -162,6 +167,7 @@ class CsvSeeder extends Seeder {
             DB::table($this->table)->insert($seedData);
         } catch (\Exception $e) {
             Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
+            var_dump($seedData);
         }
     }
 
