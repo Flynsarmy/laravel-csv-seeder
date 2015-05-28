@@ -86,7 +86,10 @@ class CsvSeeder extends Seeder
 	private function seedFromCSV($filename, $deliminator = ",")
 	{
 		if ( !file_exists($filename) || !is_readable($filename) )
+		{
+			Log::error("CSV insert failed: CSV " . $filename . " does not exist or is not readable.");
 			return FALSE;
+		}
 
 		$header = NULL;
 		$row_count = 0;
