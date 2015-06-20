@@ -53,7 +53,7 @@ In addition to setting the database table and CSV filename, two other configurat
 
  - `insert_chunk_size` (int 500) An SQL insert statement will trigger every `insert_chunk_size` number of rows while reading the CSV
  - `csv_delimiter` (string ,) The CSV field delimiter.
- - `hashable` (string password) Hash the hashable field, useful if you are importing users and need their passwords hashed. Uses `Hash::make()`
+ - `hashable` (string password) Hash the hashable field, useful if you are importing users and need their passwords hashed. Uses `Hash::make()`. Note: This is EXTREMELY SLOW. If you have a lot of rows in your CSV your import will take quite a long time.
 
 For example if you have a CSV with pipe delimited values, your constructor seed constructor will look like so:
 

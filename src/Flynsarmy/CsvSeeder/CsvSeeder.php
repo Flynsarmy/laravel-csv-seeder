@@ -1,9 +1,10 @@
 <?php namespace Flynsarmy\CsvSeeder;
 
+use App;
 use Log;
+use DB;
+use Hash;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Taken from http://laravelsnippets.com/snippets/seeding-database-with-csv-files-cleanly
@@ -17,14 +18,14 @@ class CsvSeeder extends Seeder
 	 *
 	 * @var string
 	 */
-	protected $table;
+	public $table;
 
 	/**
 	 * CSV filename
 	 *
 	 * @var string
 	 */
-	protected $filename;
+	public $filename;
 
 	/**
 	 * DB field that to be hashed, most likely a password field.
@@ -34,24 +35,46 @@ class CsvSeeder extends Seeder
 	 * @var string
 	 */
 
-	protected $hashable = 'password';
+	public $hashable = 'password';
 
 	/**
 	 * An SQL INSERT query will execute every time this number of rows
 	 * are read from the CSV. Without this, large INSERTS will silently
 	 * fail.
 	 *
-	 * @var integer
+	 * @var int
 	 */
-	protected $insert_chunk_size = 50;
+	public $insert_chunk_size = 50;
 
 	/**
 	 * CSV delimiter (defaults to ,)
 	 *
 	 * @var string
 	 */
-	protected $csv_delimiter = ',';
+	public $csv_delimiter = ',';
 
+    /**
+     * Number of rows to skip at the start of the CSV
+     *
+     * @var int
+     */
+    public $offset_rows = 0;
+
+
+    /**
+     * The mapping of CSV to DB column. If not specified manually, the first
+     * row (after offset_rows) of your CSV will be read as your DB columns.
+     *
+     * IE to read the first, third and fourth columns of your CSV only, use:
+     * array(
+     *   0 => id,
+     *   2 => name,
+     *   3 => description,
+     * )
+     *
+     * @var array
+     */
+    public $mapping = [];
 
 
 	/**
@@ -59,111 +82,161 @@ class CsvSeeder extends Seeder
 	 */
 	public function run()
 	{
-		$this->seedFromCSV($this->filename, $this->csv_delimiter);
+        $this->seedFromCSV($this->filename, $this->csv_delimiter);
 	}
 
 	/**
 	 * Strip UTF-8 BOM characters from the start of a string
 	 *
 	 * @param  string $text
-	 *
 	 * @return string       String with BOM stripped
 	 */
-	private function strip_utf8_bom( $text )
+	public function stripUtf8Bom( $text )
 	{
 		$bom = pack('H*','EFBBBF');
 		$text = preg_replace("/^$bom/", '', $text);
-		return $text;
+
+        return $text;
 	}
+
+    /**
+     * Opens a CSV file and returns it as a resource
+     *
+     * @param $filename
+     * @return FALSE|resource
+     */
+    public function openCSV($filename)
+    {
+        if ( !file_exists($filename) || !is_readable($filename) )
+        {
+            Log::error("CSV insert failed: CSV " . $filename . " does not exist or is not readable.");
+            return FALSE;
+        }
+
+        // check if file is gzipped
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $file_mime_type = finfo_file($finfo, $filename);
+        finfo_close($finfo);
+        $gzipped = strcmp($file_mime_type, "application/x-gzip") == 0;
+
+        $handle = $gzipped ? gzopen($filename, 'r') : fopen($filename, 'r');
+
+        return $handle;
+    }
 
 	/**
 	 * Collect data from a given CSV file and return as array
 	 *
-	 * @param $filename
+	 * @param string $filename
 	 * @param string $deliminator
 	 * @return array|bool
 	 */
-	private function seedFromCSV($filename, $deliminator = ",")
+	public function seedFromCSV($filename, $deliminator = ",")
 	{
-		if ( !file_exists($filename) || !is_readable($filename) )
-		{
-			Log::error("CSV insert failed: CSV " . $filename . " does not exist or is not readable.");
-			return FALSE;
-		}
+        $handle = $this->openCSV($filename);
 
-		// check if file is gzipped
-		$finfo = finfo_open(FILEINFO_MIME_TYPE);
-		$file_mime_type = finfo_file($finfo, $filename);
-		finfo_close($finfo);
-		$gzipped = strcmp($file_mime_type, "application/x-gzip") == 0;
+        // CSV doesn't exist or couldn't be read from.
+        if ( $handle === FALSE )
+            return [];
 
 		$header = NULL;
 		$row_count = 0;
-		$data = array();
-		$handle = $gzipped ? popen("gzip -cd " . $filename, 'r') : fopen($filename, 'r');
+		$data = [];
+        $mapping = $this->mapping ?: [];
+        $offset = $this->offset_rows;
 
-		if ( $handle !== FALSE )
-		{
-			while ( ($row = fgetcsv($handle, 0, $deliminator)) !== FALSE )
-			{
+        while ( ($row = fgetcsv($handle, 0, $deliminator)) !== FALSE )
+        {
+            // Offset the specified number of rows
 
-				if ( !$header )
-				{
-					$header = $row;
-					$header[0] = $this->strip_utf8_bom($header[0]);
-				}
-				else
-				{
-					// insert only non-empty fields from the csv file
-					$i = 0;
-					$row_values = [];
+            while ( $offset > 0 )
+            {
+                $offset--;
+                continue 2;
+            }
 
-					foreach ($header as $key) {
-						if ($row[$i] === '') {
-							$row_values[$key] = NULL;
-						}
-						else {
-							$row_values[$key] = $row[$i];
-						}
-						$i++;
-					}
+            // No mapping specified - grab the first CSV row and use it
+            if ( !$mapping )
+            {
+                $mapping = $row;
+                $mapping[0] = $this->stripUtf8Bom($mapping[0]);
+            }
+            else
+            {
+                $row = $this->readRow($row, $mapping);
 
-					if(isset($row_values[$this->hashable])){
-						$row_values[$this->hashable] =  Hash::make($row_values[$this->hashable]);
-					}
+                // insert only non-empty rows from the csv file
+                if ( !$row )
+                    continue;
 
-					$data[$row_count] = $row_values;
+                $data[$row_count] = $row;
 
-					// Chunk size reached, insert
-					if ( ++$row_count == $this->insert_chunk_size )
-					{
-						$this->run_insert($data);
-						$row_count = 0;
-						//clear the data array explicitly when it was inserted so that nothing is left, otherwise a leftover scenario can cause duplicate inserts
-						$data = array();
-					}
-				}
-			}
+                // Chunk size reached, insert
+                if ( ++$row_count == $this->insert_chunk_size )
+                {
+                    $this->insert($data);
+                    $row_count = 0;
+                    // clear the data array explicitly when it was inserted so
+                    // that nothing is left, otherwise a leftover scenario can
+                    // cause duplicate inserts
+                    $data = array();
+                }
+            }
+        }
 
-			// Insert any leftover rows
-			//check if the data array explicitly if there are any values left to be inserted, if insert them
-			if ( count($data)  )
-				$this->run_insert($data);
+        // Insert any leftover rows
+        //check if the data array explicitly if there are any values left to be inserted, if insert them
+        if ( count($data)  )
+            $this->insert($data);
 
-			fclose($handle);
-		}
+        fclose($handle);
 
 		return $data;
 	}
 
-	private function run_insert( array $seedData )
+    /**
+     * Read a CSV row into a DB insertable array
+     *
+     * @param array $row        List of CSV columns
+     * @param array $mapping    Array of csvCol => dbCol
+     * @return array
+     */
+    public function readRow( array $row, array $mapping )
+    {
+        $row_values = [];
+
+        foreach ($mapping as $csvCol => $dbCol) {
+            if (!isset($row[$csvCol]) || $row[$csvCol] === '') {
+                $row_values[$dbCol] = NULL;
+            }
+            else {
+                $row_values[$dbCol] = $row[$csvCol];
+            }
+        }
+
+        if ($this->hashable && isset($row_values[$this->hashable])) {
+            $row_values[$this->hashable] =  Hash::make($row_values[$this->hashable]);
+        }
+
+        return $row_values;
+    }
+
+    /**
+     * Seed a given set of data to the DB
+     *
+     * @param array $seedData
+     * @return bool   TRUE on success else FALSE
+     */
+	public function insert( array $seedData )
 	{
 		try {
-			DB::table($this->table)->insert($seedData);
+            DB::table($this->table)->insert($seedData);
 		} catch (\Exception $e) {
-			Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
+            Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
+            return FALSE;
 		}
 
+        return TRUE;
 	}
 
 }

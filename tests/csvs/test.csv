@@ -1,0 +1,6 @@
+id,first_name,last_name,email,password,address,age
+1,Abe,Abeson,abe.abeson@foo.com,abeabeson,123 Abe street,50
+2,Betty,Bettyson,betty.bettyson@foo.com,bettybettyson,123 Betty street,51
+3,Charly,Charlyson,charly.charlyson@foo.com,charlycharlyson,123 Charly street,52
+4,Delta,Deltason,delta.deltason@foo.com,deltadeltason,123 Delta street,53
+5,Echo,Echoson,echo.echoson@foo.com,echoechoson,123 Echo street,54
