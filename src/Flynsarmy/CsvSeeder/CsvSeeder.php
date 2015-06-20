@@ -91,11 +91,18 @@ class CsvSeeder extends Seeder
 			return FALSE;
 		}
 
+		// check if file is gzipped
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$file_mime_type = finfo_file($finfo, $filename);
+		finfo_close($finfo);
+		$gzipped = strcmp($file_mime_type, "application/x-gzip") == 0;
+
 		$header = NULL;
 		$row_count = 0;
 		$data = array();
+		$handle = $gzipped ? popen("gzip -cd " . $filename, 'r') : fopen($filename, 'r');
 
-		if ( ($handle = fopen($filename, 'r')) !== FALSE )
+		if ( $handle !== FALSE )
 		{
 			while ( ($row = fgetcsv($handle, 0, $deliminator)) !== FALSE )
 			{
