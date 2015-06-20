@@ -112,9 +112,12 @@ class CsvSeeder extends Seeder
 					$row_values = [];
 
 					foreach ($header as $key) {
-						if (!empty($row[$i])) {
-							$row_values[$key] = $row[$i];
-						}
+                        if ($row[$i] === '') {
+                            $row_values[$key] = NULL;
+                        }
+                        else {
+                            $row_values[$key] = $row[$i];
+                        }
 						$i++;
 					}
 
