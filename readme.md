@@ -54,14 +54,47 @@ In addition to setting the database table and CSV filename, two other configurat
  - `insert_chunk_size` (int 500) An SQL insert statement will trigger every `insert_chunk_size` number of rows while reading the CSV
  - `csv_delimiter` (string ,) The CSV field delimiter.
  - `hashable` (string password) Hash the hashable field, useful if you are importing users and need their passwords hashed. Uses `Hash::make()`. Note: This is EXTREMELY SLOW. If you have a lot of rows in your CSV your import will take quite a long time.
+ - `offset_rows` (int 0) How many rows at the start of the CSV to ignore. Warning: If used, you probably want to set a mapping as your header row in the CSV will be skipped.
+ - `mapping` (array []) Associative array of csvCol => dbCol. See examples section for details. If not specified, the first row (after offset) of the CSV will be used as the mapping.
 
-For example if you have a CSV with pipe delimited values, your constructor seed constructor will look like so:
+
+### Examples 
+CSV with pipe delimited values:
 
 	public function __construct()
 	{
-		$this->table = 'your_table';
+		$this->table = 'users';
 		$this->csv_delimiter = '|';
 		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
+	}
+	
+Specifying which CSV columns to import:
+
+	public function __construct()
+	{
+		$this->table = 'users';
+		$this->csv_delimiter = '|';
+		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
+		$this->mapping = [
+		    0 => 'first_name',
+		    1 => 'last_name',
+		    5 => 'age',
+		];
+	}
+	
+Skipping the CSV header row (Note: A mapping is required if this is done):
+
+	public function __construct()
+	{
+		$this->table = 'users';
+		$this->csv_delimiter = '|';
+		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
+		$this->offset_rows = 1;
+		$this->mapping = [
+		    0 => 'first_name',
+		    1 => 'last_name',
+		    2 => 'password',
+		];
 	}
 
 ### License
