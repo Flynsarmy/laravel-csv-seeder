@@ -5,6 +5,7 @@ use Log;
 use DB;
 use Hash;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Schema;
 
 /**
  * Taken from http://laravelsnippets.com/snippets/seeding-database-with-csv-files-cleanly
@@ -160,6 +161,13 @@ class CsvSeeder extends Seeder
             {
                 $mapping = $row;
                 $mapping[0] = $this->stripUtf8Bom($mapping[0]);
+
+                // skip csv columns that don't exist in the database
+                foreach($mapping  as $index => $fieldname){
+                    if (!DB::getSchemaBuilder()->hasColumn($this->table, $fieldname)){
+                       array_pull($mapping, $index);
+                    }
+                }
             }
             else
             {
