@@ -109,12 +109,12 @@ class CsvTest extends TestCase
 
         // Test an openable CSV
         $expected = "resource";
-        $actual = $seeder->openCSV(__DIR__.'/csvs/test.csv');
+        $actual = $seeder->openCSV(__DIR__.'/csvs/users.csv');
         $this->assertInternalType($expected, $actual);
 
         // Test a non-openable CSV
         $expected = FALSE;
-        $actual = $seeder->openCSV(__DIR__.'/csvs/test_that_does_not_exist.csv');
+        $actual = $seeder->openCSV(__DIR__.'/csvs/csv_that_does_not_exist.csv');
         $this->assertEquals($expected, $actual);
     }
 
@@ -122,7 +122,32 @@ class CsvTest extends TestCase
     {
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
         $seeder->table = 'users';
-        $seeder->filename = __DIR__.'/csvs/test.csv';
+        $seeder->filename = __DIR__.'/csvs/users.csv';
+        $seeder->hashable = '';
+        $seeder->run();
+
+        // Make sure the rows imported
+        $this->seeInDatabase('users', [
+            'id' => 1,
+            'first_name' => 'Abe',
+            'last_name' => 'Abeson',
+            'email' => 'abe.abeson@foo.com',
+            'age' => 50,
+        ]);
+        $this->seeInDatabase('users', [
+            'id' => 3,
+            'first_name' => 'Charly',
+            'last_name' => 'Charlyson',
+            'email' => 'charly.charlyson@foo.com',
+            'age' => 52,
+        ]);
+    }
+
+    public function testIgnoredColumnImport()
+    {
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder->table = 'users';
+        $seeder->filename = __DIR__.'/csvs/users_with_ignored_column.csv';
         $seeder->hashable = '';
         $seeder->run();
 
@@ -147,7 +172,7 @@ class CsvTest extends TestCase
     {
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
         $seeder->table = 'users';
-        $seeder->filename = __DIR__.'/csvs/test.csv';
+        $seeder->filename = __DIR__.'/csvs/users.csv';
 
         // Assert unhashed passwords
         $seeder->hashable = '';
@@ -161,7 +186,6 @@ class CsvTest extends TestCase
         DB::table('users')->truncate();
 
         // Assert hashed passwords
-        var_dump('running again');
         $seeder->hashable = 'password';
         $seeder->run();
         // Row 1 should still be in DB...
@@ -179,7 +203,7 @@ class CsvTest extends TestCase
     {
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
         $seeder->table = 'users';
-        $seeder->filename = __DIR__.'/csvs/test.csv';
+        $seeder->filename = __DIR__.'/csvs/users.csv';
         $seeder->hashable = '';
         $seeder->offset_rows = 4;
         $seeder->mapping = [
