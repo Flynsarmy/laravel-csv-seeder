@@ -161,7 +161,6 @@ class CsvTest extends TestCase
         DB::table('users')->truncate();
 
         // Assert hashed passwords
-        var_dump('running again');
         $seeder->hashable = 'password';
         $seeder->run();
         // Row 1 should still be in DB...
