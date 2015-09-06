@@ -83,6 +83,7 @@ class CsvSeeder extends Seeder
 	 */
 	public function run()
 	{
+        ini_set("auto_detect_line_endings", true);
         $this->seedFromCSV($this->filename, $this->csv_delimiter);
 	}
 
