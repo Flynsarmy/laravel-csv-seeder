@@ -214,8 +214,10 @@ class CsvSeeder extends Seeder
         $row_values = [];
 
         foreach ($mapping as $csvCol => $dbCol) {
-            if (!isset($row[$csvCol]) || $row[$csvCol] === '') {
-                $row_values[$dbCol] = NULL;
+            if (!isset($row[$csvCol]) || $row[$csvCol] === '' || !DB::getSchemaBuilder()->hasColumn($this->table, $dbCol)) {
+                if (DB::getSchemaBuilder()->hasColumn($this->table, $dbCol)) {
+                   $row_values[$dbCol] = NULL;
+                }
             }
             else {
                 $row_values[$dbCol] = $row[$csvCol];
