@@ -61,6 +61,13 @@ class CsvSeeder extends Seeder
      */
     public $offset_rows = 0;
 
+    /**
+     * Can be used to tell the import to trim any leading or trailing white space from the column;
+     *
+     * @var bool
+     */
+    public $should_trim = false;
+
 
     /**
      * The mapping of CSV to DB column. If not specified manually, the first
@@ -238,7 +245,7 @@ class CsvSeeder extends Seeder
 	public function insert( array $seedData )
 	{
 		try {
-            DB::table($this->table)->insert($seedData);
+            DB::table($this->table)->insert($this->should_trim ? trim($seedData) : $seedData);
 		} catch (\Exception $e) {
             Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
             return FALSE;
