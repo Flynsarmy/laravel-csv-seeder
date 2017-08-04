@@ -225,7 +225,7 @@ class CsvSeeder extends Seeder
                 $row_values[$dbCol] = NULL;
             }
             else {
-                $row_values[$dbCol] = $row[$csvCol];
+                $row_values[$dbCol] = $this->should_trim ? trim($row[$csvCol]) : $row[$csvCol];
             }
         }
 
@@ -245,7 +245,7 @@ class CsvSeeder extends Seeder
 	public function insert( array $seedData )
 	{
 		try {
-            DB::table($this->table)->insert($this->should_trim ? trim($seedData) : $seedData);
+            DB::table($this->table)->insert($seedData);
 		} catch (\Exception $e) {
             Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
             return FALSE;
