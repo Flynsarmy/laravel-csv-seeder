@@ -61,6 +61,13 @@ class CsvSeeder extends Seeder
      */
     public $offset_rows = 0;
 
+    /**
+     * Can be used to tell the import to trim any leading or trailing white space from the column;
+     *
+     * @var bool
+     */
+    public $should_trim = false;
+
 
     /**
      * The mapping of CSV to DB column. If not specified manually, the first
@@ -218,7 +225,7 @@ class CsvSeeder extends Seeder
                 $row_values[$dbCol] = NULL;
             }
             else {
-                $row_values[$dbCol] = $row[$csvCol];
+                $row_values[$dbCol] = $this->should_trim ? trim($row[$csvCol]) : $row[$csvCol];
             }
         }
 
