@@ -82,6 +82,21 @@ Specifying which CSV columns to import:
 		];
 	}
 	
+Trimming the whitespace from the imported data:
+
+	public function __construct()
+	{
+		$this->table = 'users';
+		$this->csv_delimiter = '|';
+		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
+		$this->mapping = [
+		    0 => 'first_name',
+		    1 => 'last_name',
+		    5 => 'age',
+		];
+		$this->should_trim = true;
+	}
+	
 Skipping the CSV header row (Note: A mapping is required if this is done):
 
 	public function __construct()
@@ -95,6 +110,7 @@ Skipping the CSV header row (Note: A mapping is required if this is done):
 		    1 => 'last_name',
 		    2 => 'password',
 		];
+		$this->should_trim = true;
 	}
 
 ### License
