@@ -60,13 +60,13 @@ class CsvSeeder extends Seeder
      * @var int
      */
     public $offset_rows = 0;
-
+    
     /**
-     * Can be used to tell the import to trim any leading or trailing white space from the column;
+     * Number of rows to skip at the start of the CSV
      *
-     * @var bool
+     * @var int
      */
-    public $should_trim = false;
+     public $timestamps = false;
 
 
     /**
@@ -198,13 +198,14 @@ class CsvSeeder extends Seeder
                 }
             }
         }
+        
+        fclose($handle);
 
         // Insert any leftover rows
         //check if the data array explicitly if there are any values left to be inserted, if insert them
-        if ( count($data)  )
+        if(count($data)){
             $this->insert($data);
-
-        fclose($handle);
+        }
 
 		return $data;
 	}
@@ -225,7 +226,7 @@ class CsvSeeder extends Seeder
                 $row_values[$dbCol] = NULL;
             }
             else {
-                $row_values[$dbCol] = $this->should_trim ? trim($row[$csvCol]) : $row[$csvCol];
+                $row_values[$dbCol] = $row[$csvCol];
             }
         }
 
@@ -244,7 +245,17 @@ class CsvSeeder extends Seeder
      */
 	public function insert( array $seedData )
 	{
-		try {
+        if($this->timestamps){
+            $new = [];
+            foreach ($seedData as $key => $item) {
+                $new[$key] = $item;
+                $new[$key]['created_at'] = \Carbon\Carbon::now();
+                $new[$key]['updated_at'] = \Carbon\Carbon::now();
+            }
+            $seedData = $new;
+        }
+        
+        try {
             DB::table($this->table)->insert($seedData);
 		} catch (\Exception $e) {
             Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
