@@ -65,7 +65,6 @@ class CsvSeeder extends Seeder
      * Can be used to tell the import to trim any leading or trailing white space from the column;
      *
      * @var bool
-     * @var int
      */
     public $should_trim = false;
 
