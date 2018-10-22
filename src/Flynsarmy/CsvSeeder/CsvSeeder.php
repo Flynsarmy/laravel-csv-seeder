@@ -63,7 +63,6 @@ class CsvSeeder extends Seeder
     
     /**
      * Can be used to tell the import to trim any leading or trailing white space from the column;
-     * Number of rows to skip at the start of the CSV
      *
      * @var bool
      * @var int
