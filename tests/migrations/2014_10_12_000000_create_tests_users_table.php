@@ -1,7 +1,7 @@
 <?php
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersTable extends Migration
+class CreateTestsUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -10,7 +10,7 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function ($table) {
+        Schema::create('tests_users', function ($table) {
             $table->increments('id');
             $table->string('first_name')->default('');
             $table->string('last_name')->default('');
@@ -27,6 +27,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('users');
+        Schema::drop('tests_users');
     }
 }
