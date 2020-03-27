@@ -51,6 +51,7 @@ Drop your CSV into */database/seeds/csvs/your_csv.csv* or whatever path you spec
 
 In addition to setting the database table and CSV filename, the following configuration options are available. They can be set in your class constructor:
 
+ - `connection` (string '') Connection to use for inserts. Leave empty for default connection.
  - `insert_chunk_size` (int 500) An SQL insert statement will trigger every `insert_chunk_size` number of rows while reading the CSV
  - `csv_delimiter` (string ,) The CSV field delimiter.
  - `hashable` (array [password]) List of fields to be hashed before import, useful if you are importing users and need their passwords hashed. Uses `Hash::make()`. Note: This is EXTREMELY SLOW. If you have a lot of rows in your CSV your import will take quite a long time.

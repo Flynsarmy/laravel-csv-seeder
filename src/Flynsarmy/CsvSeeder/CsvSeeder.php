@@ -19,14 +19,19 @@ class CsvSeeder extends Seeder
      *
      * @var string
      */
-    public string $table;
+    public string $table = '';
 
     /**
      * CSV filename
      *
      * @var string
      */
-    public string $filename;
+    public string $filename = '';
+
+    /**
+     * DB connection to use. Leave empty for default connection
+     */
+    public string $connection = '';
 
     /**
      * DB fields to be hashed before import, For example a password field.
@@ -63,8 +68,8 @@ class CsvSeeder extends Seeder
      * created_at and updated_at values to be added to each row. Only used if
      * $this->timestamps is true
      */
-    public string $created_at;
-    public string $updated_at;
+    public string $created_at = '';
+    public string $updated_at = '';
 
     /**
      * The mapping of CSV to DB column. If not specified manually, the first
@@ -300,7 +305,7 @@ class CsvSeeder extends Seeder
     public function insert(array $seedData): bool
     {
         try {
-            DB::table($this->table)->insert($seedData);
+            DB::connection($this->connection)->table($this->table)->insert($seedData);
         } catch (\Exception $e) {
             Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
             return false;

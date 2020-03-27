@@ -240,6 +240,31 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     }
 
     /** @test */
+    public function it_uses_provided_connection()
+    {
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder->table = 'tests_users';
+
+        // Test default connection works
+        $seeder->insert(['id' => 1, 'first_name' => 'Aaron']);
+        $this->assertDatabaseHas('tests_users', [
+            'id' => 1,
+            'first_name' => 'Aaron',
+        ]);
+
+        // Reset users table
+        \DB::table('tests_users')->truncate();
+
+        // Test inserting into a different connection
+        $seeder->connection = 'some_connection_that_doesnt_exist';
+        $seeder->insert(['id' => 1, 'first_name' => 'Aaron']);
+        $this->assertDatabaseMissing('tests_users', [
+            'id' => 1,
+            'first_name' => 'Aaron',
+        ]);
+    }
+
+    /** @test */
     public function it_ignores_columns_on_import()
     {
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
