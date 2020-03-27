@@ -8,9 +8,9 @@ This package allows CSV based seeds.
 
 ### Installation
 
-Require this package in your composer.json and run composer update (or run `composer require flynsarmy/csv-seeder:1.*` directly):
+Require this package in your composer.json and run composer update (or run `composer require flynsarmy/csv-seeder:2.*` directly):
 
-    "flynsarmy/csv-seeder": "1.0.*"
+    "flynsarmy/csv-seeder": "2.0.*"
 
 
 ### Usage
@@ -49,13 +49,17 @@ Drop your CSV into */database/seeds/csvs/your_csv.csv* or whatever path you spec
 
 ### Configuration
 
-In addition to setting the database table and CSV filename, two other configuration options are available. They can be set in your class constructor:
+In addition to setting the database table and CSV filename, the following configuration options are available. They can be set in your class constructor:
 
  - `insert_chunk_size` (int 500) An SQL insert statement will trigger every `insert_chunk_size` number of rows while reading the CSV
  - `csv_delimiter` (string ,) The CSV field delimiter.
- - `hashable` (string password) Hash the hashable field, useful if you are importing users and need their passwords hashed. Uses `Hash::make()`. Note: This is EXTREMELY SLOW. If you have a lot of rows in your CSV your import will take quite a long time.
+ - `hashable` (array [password]) List of fields to be hashed before import, useful if you are importing users and need their passwords hashed. Uses `Hash::make()`. Note: This is EXTREMELY SLOW. If you have a lot of rows in your CSV your import will take quite a long time.
  - `offset_rows` (int 0) How many rows at the start of the CSV to ignore. Warning: If used, you probably want to set a mapping as your header row in the CSV will be skipped.
  - `mapping` (array []) Associative array of csvCol => dbCol. See examples section for details. If not specified, the first row (after offset) of the CSV will be used as the mapping.
+ - `should_trim` (bool false) Whether to trim the data in each cell of the CSV during import.
+ - `timestamps` (bool false) Whether or not to add *created_at* and *updated_at* columns on import.
+   - `created_at` (string current time in ISO 8601 format) Only used if `timestamps` is `true`
+   - `updated_at` (string current time in ISO 8601 format) Only used if `timestamps` is `true`
 
 
 ### Examples 
@@ -112,6 +116,12 @@ Skipping the CSV header row (Note: A mapping is required if this is done):
 		];
 		$this->should_trim = true;
 	}
+
+### Migration Guide
+
+#### 2.0
+
+- `$seeder->hashable` is now an `array` of columns rather than a single column name. Wrap your old string value in `[]`.
 
 ### License
 

@@ -56,7 +56,42 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     }
 
     /** @test */
-    public function it_maps_correctly()
+    public function it_removes_unused_hash_columns()
+    {
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        
+        // Retain 'password' hashable
+        $seeder->hashable = ['password'];
+        $mapping = [
+            0 => 'id',
+            1 => 'password'
+        ];
+        $expected = ['password'];
+        $actual = $seeder->removeUnusedHashColumns($mapping);
+        $this->assertEquals($expected, $actual);
+
+        // Remove unused 'password' hashable
+        $seeder->hashable = ['password'];
+        $mapping = [
+            0 => 'id'
+        ];
+        $expected = [];
+        $actual = $seeder->removeUnusedHashColumns($mapping);
+        $this->assertEquals($expected, $actual);
+
+        // Remove unused 'foo' hashable but keep 'password'
+        $seeder->hashable = ['password', 'foo'];
+        $mapping = [
+            0 => 'id',
+            3 => 'password',
+        ];
+        $expected = ['password'];
+        $actual = $seeder->removeUnusedHashColumns($mapping);
+        $this->assertEquals($expected, $actual);
+    }
+
+    /** @test */
+    public function it_reads_to_mapping_correctly()
     {
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
         $row = [1, 'ignored', 'first', 'last'];
@@ -106,14 +141,46 @@ class CsvTest extends \Orchestra\Testbench\TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    /** @test */
+    public function it_adds_timestamps()
+    {
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $row = [1, 'first', 'last'];
+
+        // Test no timetsamps
+        $mapping = [
+            0 => 'id',
+            1 => 'first_name',
+        ];
+        $actual = $seeder->readRow($row, $mapping);
+        $expected = [
+            'id' => 1,
+            'first_name' => 'first',
+        ];
+        $this->assertEquals($expected, $actual);
+
+        // Test with timestamps
+        $seeder->timestamps = true;
+        $seeder->created_at = \Carbon\Carbon::now()->toString();
+        $seeder->updated_at = $seeder->created_at;
+        $actual = $seeder->readRow($row, $mapping);
+        $expected = [
+            'id' => 1,
+            'first_name' => 'first',
+            'created_at' => $seeder->created_at,
+            'updated_at' => $seeder->updated_at,
+        ];
+        $this->assertEquals($expected, $actual);
+    }
+
+    /** @test */
     public function it_can_open_CSV()
     {
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
 
         // Test an openable CSV
-        $expected = "resource";
         $actual = $seeder->openCSV(__DIR__.'/csvs/users.csv');
-        $this->assertInternalType($expected, $actual);
+        $this->assertIsResource($actual);
 
         // Test a non-openable CSV
         $expected = false;
@@ -122,12 +189,37 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     }
 
     /** @test */
+    public function it_creates_mappings()
+    {
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder->table = 'tests_users';
+
+        // CSV with same columns as DB table
+        $row = ['id','first_name','last_name','email','password','address','age'];
+        $actual = $seeder->createMappingFromRow($row);
+        $expected = ['id','first_name','last_name','email','password','address','age'];
+        $this->assertEquals($actual, $expected);
+
+        // CSV with less columns than DB table
+        $row = ['id','first_name'];
+        $actual = $seeder->createMappingFromRow($row);
+        $expected = ['id','first_name'];
+        $this->assertEquals($actual, $expected);
+
+        // CSV with more columns as DB table
+        $row = ['id','first_name','last_name','email','password','address','age','foo','bar'];
+        $actual = $seeder->createMappingFromRow($row);
+        $expected = ['id','first_name','last_name','email','password','address','age'];
+        $this->assertEquals($actual, $expected);
+    }
+
+    /** @test */
     public function it_imports()
     {
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
         $seeder->table = 'tests_users';
         $seeder->filename = __DIR__.'/csvs/users.csv';
-        $seeder->hashable = '';
+        $seeder->hashable = [];
         $seeder->run();
 
         // Make sure the rows imported
@@ -153,7 +245,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
         $seeder->table = 'tests_users';
         $seeder->filename = __DIR__.'/csvs/users_with_ignored_column.csv';
-        $seeder->hashable = '';
+        $seeder->hashable = [];
         $seeder->run();
 
         // Make sure the rows imported
@@ -181,7 +273,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
         $seeder->filename = __DIR__.'/csvs/users.csv';
 
         // Assert unhashed passwords
-        $seeder->hashable = '';
+        $seeder->hashable = [];
         $seeder->run();
         $this->assertDatabaseHas('tests_users', [
             'id' => 1,
@@ -192,7 +284,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
         \DB::table('tests_users')->truncate();
 
         // Assert hashed passwords
-        $seeder->hashable = 'password';
+        $seeder->hashable = ['password'];
         $seeder->run();
         // Row 1 should still be in DB...
         $this->assertDatabaseHas('tests_users', [
@@ -211,7 +303,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
         $seeder->table = 'tests_users';
         $seeder->filename = __DIR__.'/csvs/users.csv';
-        $seeder->hashable = '';
+        $seeder->hashable = [];
         $seeder->offset_rows = 4;
         $seeder->mapping = [
             0 => 'id',
@@ -230,6 +322,9 @@ class CsvTest extends \Orchestra\Testbench\TestCase
             'id' => 5,
             'first_name' => 'Echo',
             'last_name' => '',
+            'email' => '',
+            'password' => '',
+            'address' => '',
             'age' => 54
         ]);
     }
