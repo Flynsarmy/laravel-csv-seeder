@@ -1,5 +1,7 @@
 ## CSV Seeder
 
+![](https://github.com/Flynsarmy/laravel-csv-seeder/workflows/CI/badge.svg)
+
 
 ### Seed your database with CSV files
 
@@ -116,6 +118,15 @@ Skipping the CSV header row (Note: A mapping is required if this is done):
 		    2 => 'password',
 		];
 		$this->should_trim = true;
+	}
+
+Specifying the DB connection to use:
+
+	public function __construct()
+	{
+		$this->table = 'users';
+		$this->connection = 'my_connection';
+		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
 	}
 
 ### Migration Guide
