@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-          php: [7.4, 7.3, 7.2]
+          php: [7.4]
 
     name: PHP${{ matrix.php }} 
 
@@ -32,8 +32,7 @@ jobs:
           coverage: none
 
     - name: Install Dependencies (PHP vendors)
-      #run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --dev
-      run: composer install
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --dev
 
     - name: Run code quality checks
       run: vendor/bin/phpcs

@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=7",
+        "php": ">=7.4",
         "illuminate/support": ">=4.1.0"
     },
     "autoload": {
