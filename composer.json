@@ -20,6 +20,7 @@
     },
     "minimum-stability": "dev",
     "require-dev": {
-        "orchestra/testbench": "^6.0@dev"
+        "orchestra/testbench": "^6.0@dev",
+        "squizlabs/php_codesniffer": "3.*"
     }
 }

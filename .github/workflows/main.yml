@@ -1,3 +1,4 @@
+# https://freek.dev/1546-using-github-actions-to-run-the-tests-of-laravel-projects-and-packages
 # This is a basic workflow to help you get started with Actions
 name: CI
 
@@ -11,13 +12,30 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+          php: [7.4, 7.3, 7.2, 7.1, 7.0]
+
+    name: P${{ matrix.php }} 
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
+          coverage: none
 
     - name: Install Dependencies (PHP vendors)
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --dev
+
+    - name: Run code quality checks
+      run: ./vendor/bin/phpcs
 
     - name: Execute tests via PHPUnit
       run: vendor/bin/phpunit
