@@ -16,7 +16,7 @@ jobs:
       matrix:
           php: [7.4, 7.3, 7.2, 7.1, 7.0]
 
-    name: P${{ matrix.php }} 
+    name: PHP${{ matrix.php }} 
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -32,7 +32,7 @@ jobs:
           coverage: none
 
     - name: Install Dependencies (PHP vendors)
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --dev
+      run: composer install
 
     - name: Run code quality checks
       run: ./vendor/bin/phpcs
