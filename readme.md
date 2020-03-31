@@ -1,6 +1,9 @@
 ## CSV Seeder
 
-![](https://github.com/Flynsarmy/laravel-csv-seeder/workflows/CI/badge.svg)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/flynsarmy/csv-seeder.svg?style=flat-square)](https://packagist.org/packages/flynsarmy/csv-seeder)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+![Build Status](https://github.com/Flynsarmy/laravel-csv-seeder/workflows/CI/badge.svg)
+[![Total Downloads](https://img.shields.io/packagist/dt/flynsarmy/csv-seeder.svg?style=flat-square)](https://packagist.org/packages/flynsarmy/csv-seeder)
 
 
 ### Seed your database with CSV files
