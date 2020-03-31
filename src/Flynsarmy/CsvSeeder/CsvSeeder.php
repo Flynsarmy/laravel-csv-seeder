@@ -159,7 +159,6 @@ class CsvSeeder extends Seeder
             return [];
         }
 
-        $header = null;
         $row_count = 0;
         $data = [];
         $mapping = $this->mapping ?: [];
@@ -187,7 +186,7 @@ class CsvSeeder extends Seeder
             $row = $this->readRow($row, $mapping);
 
             // insert only non-empty rows from the csv file
-            if (!$row) {
+            if (empty($row)) {
                 continue;
             }
 
@@ -246,7 +245,7 @@ class CsvSeeder extends Seeder
      * know they don't exist.
      *
      * @param array $mapping
-     * @return void
+     * @return array
      */
     public function removeUnusedHashColumns(array $mapping)
     {
@@ -280,7 +279,7 @@ class CsvSeeder extends Seeder
             }
         }
 
-        if ($this->hashable) {
+        if (!empty($this->hashable)) {
             foreach ($this->hashable as $columnToHash) {
                 if (isset($row_values[$columnToHash])) {
                     $row_values[$columnToHash] = Hash::make($row_values[$columnToHash]);
