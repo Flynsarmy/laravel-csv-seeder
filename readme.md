@@ -3,7 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/flynsarmy/csv-seeder.svg?style=flat-square)](https://packagist.org/packages/flynsarmy/csv-seeder)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 ![Build Status](https://github.com/Flynsarmy/laravel-csv-seeder/workflows/CI/badge.svg)
-[![Quality Score](https://img.shields.io/scrutinizer/g/flynsarmy/laravel-csv-seeder.svg?style=flat-square)](https://scrutinizer-ci.com/g/flynsarmy/laravel-csv-seeder)
+[![Quality Score](https://scrutinizer-ci.com/g/Flynsarmy/laravel-csv-seeder/badges/quality-score.png)](https://scrutinizer-ci.com/g/flynsarmy/laravel-csv-seeder)
 [![Total Downloads](https://img.shields.io/packagist/dt/flynsarmy/csv-seeder.svg?style=flat-square)](https://packagist.org/packages/flynsarmy/csv-seeder)
 
 
