@@ -4,8 +4,8 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 ![Build Status](https://github.com/Flynsarmy/laravel-csv-seeder/workflows/CI/badge.svg)
 [![Quality Score](https://scrutinizer-ci.com/g/Flynsarmy/laravel-csv-seeder/badges/quality-score.png)](https://scrutinizer-ci.com/g/flynsarmy/laravel-csv-seeder)
-[![Total Downloads](https://img.shields.io/packagist/dt/flynsarmy/csv-seeder.svg?style=flat-square)](https://packagist.org/packages/flynsarmy/csv-seeder)
-
+[![Total Downloads](https://img.shields.io/packagist/dt/flynsarmy/csv-seeder?style=flat-square)](https://packagist.org/packages/flynsarmy/csv-seeder)
+                    
 
 ### Seed your database with CSV files
 
