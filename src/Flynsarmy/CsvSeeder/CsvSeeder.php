@@ -3,10 +3,10 @@
 use App;
 use Log;
 use DB;
-use Hash;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Schema;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Taken from http://laravelsnippets.com/snippets/seeding-database-with-csv-files-cleanly
