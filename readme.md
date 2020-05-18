@@ -16,7 +16,13 @@ This package allows CSV based seeds.
 
 Require this package in your composer.json and run composer update (or run `composer require flynsarmy/csv-seeder:2.*` directly):
 
+**For PHP 7.4+**
+
     "flynsarmy/csv-seeder": "2.0.*"
+
+**For older PHP versions**
+
+    "flynsarmy/csv-seeder": "1.*"
 
 
 ### Usage
