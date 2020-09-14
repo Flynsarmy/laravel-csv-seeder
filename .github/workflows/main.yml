@@ -41,7 +41,7 @@ jobs:
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --dev
 
     - name: Run code quality checks
-      run: vendor/bin/phpcs
+      run: composer phpcs
 
     - name: Execute tests via PHPUnit
-      run: vendor/bin/phpunit
+      run: composer phpunit

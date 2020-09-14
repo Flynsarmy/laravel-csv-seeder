@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 
 class CreateTestsUsersTable extends Migration

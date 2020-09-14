@@ -1,4 +1,6 @@
-<?php namespace Flynsarmy\CsvSeeder;
+<?php
+
+namespace Flynsarmy\CsvSeeder;
 
 use App;
 use Log;
@@ -122,7 +124,7 @@ class CsvSeeder extends Seeder
     /**
      * Opens a CSV file and returns it as a resource
      *
-     * @param $filename
+     * @param string $filename
      * @return FALSE|resource
      */
     public function openCSV(string $filename)

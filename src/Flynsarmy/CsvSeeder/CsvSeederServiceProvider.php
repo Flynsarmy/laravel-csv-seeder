@@ -1,4 +1,6 @@
-<?php namespace Flynsarmy\CsvSeeder;
+<?php
+
+namespace Flynsarmy\CsvSeeder;
 
 use Illuminate\Support\ServiceProvider;
 

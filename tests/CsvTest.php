@@ -1,4 +1,6 @@
-<?php namespace Flynsarmy\CsvSeeder\Tests;
+<?php
+
+namespace Flynsarmy\CsvSeeder\Tests;
 
 class CsvTest extends \Orchestra\Testbench\TestCase
 {
@@ -39,7 +41,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_strips_BOM()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
 
         $bomString = chr(239) . chr(187) . chr(191) . "foo";
         $nonBomString = "my non bom string";
@@ -58,7 +60,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_removes_unused_hash_columns()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         
         // Retain 'password' hashable
         $seeder->hashable = ['password'];
@@ -93,7 +95,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_reads_to_mapping_correctly()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         $row = [1, 'ignored', 'first', 'last'];
 
         // Test no skipped columns
@@ -144,7 +146,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_adds_timestamps()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         $row = [1, 'first', 'last'];
 
         // Test no timetsamps
@@ -176,22 +178,22 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_can_open_CSV()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
 
         // Test an openable CSV
-        $actual = $seeder->openCSV(__DIR__.'/csvs/users.csv');
+        $actual = $seeder->openCSV(__DIR__ . '/csvs/users.csv');
         $this->assertIsResource($actual);
 
         // Test a non-openable CSV
         $expected = false;
-        $actual = $seeder->openCSV(__DIR__.'/csvs/csv_that_does_not_exist.csv');
+        $actual = $seeder->openCSV(__DIR__ . '/csvs/csv_that_does_not_exist.csv');
         $this->assertEquals($expected, $actual);
     }
 
     /** @test */
     public function it_creates_mappings()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         $seeder->table = 'tests_users';
 
         // CSV with same columns as DB table
@@ -216,9 +218,9 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_imports()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         $seeder->table = 'tests_users';
-        $seeder->filename = __DIR__.'/csvs/users.csv';
+        $seeder->filename = __DIR__ . '/csvs/users.csv';
         $seeder->hashable = [];
         $seeder->run();
 
@@ -242,7 +244,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_uses_provided_connection()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         $seeder->table = 'tests_users';
 
         // Test default connection works
@@ -267,9 +269,9 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_ignores_columns_on_import()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         $seeder->table = 'tests_users';
-        $seeder->filename = __DIR__.'/csvs/users_with_ignored_column.csv';
+        $seeder->filename = __DIR__ . '/csvs/users_with_ignored_column.csv';
         $seeder->hashable = [];
         $seeder->run();
 
@@ -293,9 +295,9 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_hashes()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         $seeder->table = 'tests_users';
-        $seeder->filename = __DIR__.'/csvs/users.csv';
+        $seeder->filename = __DIR__ . '/csvs/users.csv';
 
         // Assert unhashed passwords
         $seeder->hashable = [];
@@ -325,9 +327,9 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     /** @test */
     public function it_offsets()
     {
-        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder;
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         $seeder->table = 'tests_users';
-        $seeder->filename = __DIR__.'/csvs/users.csv';
+        $seeder->filename = __DIR__ . '/csvs/users.csv';
         $seeder->hashable = [];
         $seeder->offset_rows = 4;
         $seeder->mapping = [
