@@ -14,7 +14,7 @@
         "illuminate/support": ">=4.1.0"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Flynsarmy\\CsvSeeder\\": "src/"
         }
     },
@@ -37,6 +37,7 @@
         "coverage": "vendor/bin/phpunit tests --coverage-html coverage --whitelist src/",
         "lint": "vendor/bin/parallel-lint --exclude vendor .",
         "test": [
+            "composer validate --strict",
             "@phpcs",
             "@phpstan",
             "@phpunit"
