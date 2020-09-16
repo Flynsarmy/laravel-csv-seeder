@@ -21,7 +21,7 @@ class CsvSeederServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->package('flynsarmy/csv-seeder');
+        //
     }
 
     /**
