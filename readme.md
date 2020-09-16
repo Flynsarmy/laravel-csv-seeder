@@ -18,44 +18,51 @@ Require this package in your composer.json and run composer update (or run `comp
 
 **For PHP 7.4+**
 
-    "flynsarmy/csv-seeder": "2.0.*"
+```json
+"flynsarmy/csv-seeder": "2.0.*"
+```
 
 **For older PHP versions**
 
-    "flynsarmy/csv-seeder": "1.*"
-
+```json
+"flynsarmy/csv-seeder": "1.*"
+```
 
 ### Usage
 
 Your CSV's header row should match the DB columns you wish to import. IE to import *id* and *name* columns, your CSV should look like:
 
-	id,name
-	1,Foo
-	2,Bar
+```csv
+id,name
+1,Foo
+2,Bar
+```
 
 Seed classes must extend `Flynsarmy\CsvSeeder\CsvSeeder`, they must define the destination database table and CSV file path, and finally they must call `parent::run()` like so:
 
-	use Flynsarmy\CsvSeeder\CsvSeeder;
+```php
+use Flynsarmy\CsvSeeder\CsvSeeder;
 
-	class StopsTableSeeder extends CsvSeeder {
+class StopsTableSeeder extends CsvSeeder {
 
-		public function __construct()
-		{
-			$this->table = 'your_table';
-			$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
-		}
-
-		public function run()
-		{
-			// Recommended when importing larger CSVs
-			DB::disableQueryLog();
-
-			// Uncomment the below to wipe the table clean before populating
-			DB::table($this->table)->truncate();
-
-			parent::run();
-		}
+	public function __construct()
+	{
+		$this->table = 'your_table';
+		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
 	}
+
+	public function run()
+	{
+		// Recommended when importing larger CSVs
+		DB::disableQueryLog();
+
+		// Uncomment the below to wipe the table clean before populating
+		DB::table($this->table)->truncate();
+
+		parent::run();
+	}
+}
+```
 
 Drop your CSV into */database/seeds/csvs/your_csv.csv* or whatever path you specify in your constructor above.
 
@@ -78,66 +85,76 @@ In addition to setting the database table and CSV filename, the following config
 ### Examples 
 CSV with pipe delimited values:
 
-	public function __construct()
-	{
-		$this->table = 'users';
-		$this->csv_delimiter = '|';
-		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
-	}
-	
+```php
+public function __construct()
+{
+	$this->table = 'users';
+	$this->csv_delimiter = '|';
+	$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
+}
+```
+
 Specifying which CSV columns to import:
 
-	public function __construct()
-	{
-		$this->table = 'users';
-		$this->csv_delimiter = '|';
-		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
-		$this->mapping = [
-		    0 => 'first_name',
-		    1 => 'last_name',
-		    5 => 'age',
-		];
-	}
-	
+```php
+public function __construct()
+{
+	$this->table = 'users';
+	$this->csv_delimiter = '|';
+	$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
+	$this->mapping = [
+	    0 => 'first_name',
+	    1 => 'last_name',
+	    5 => 'age',
+	];
+}
+```
+
 Trimming the whitespace from the imported data:
 
-	public function __construct()
-	{
-		$this->table = 'users';
-		$this->csv_delimiter = '|';
-		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
-		$this->mapping = [
-		    0 => 'first_name',
-		    1 => 'last_name',
-		    5 => 'age',
-		];
-		$this->should_trim = true;
-	}
-	
+```php
+public function __construct()
+{
+	$this->table = 'users';
+	$this->csv_delimiter = '|';
+	$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
+	$this->mapping = [
+	    0 => 'first_name',
+	    1 => 'last_name',
+	    5 => 'age',
+	];
+	$this->should_trim = true;
+}
+```
+
 Skipping the CSV header row (Note: A mapping is required if this is done):
 
-	public function __construct()
-	{
-		$this->table = 'users';
-		$this->csv_delimiter = '|';
-		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
-		$this->offset_rows = 1;
-		$this->mapping = [
-		    0 => 'first_name',
-		    1 => 'last_name',
-		    2 => 'password',
-		];
-		$this->should_trim = true;
-	}
+```php
+public function __construct()
+{
+	$this->table = 'users';
+	$this->csv_delimiter = '|';
+	$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
+	$this->offset_rows = 1;
+	$this->mapping = [
+	    0 => 'first_name',
+	    1 => 'last_name',
+	    2 => 'password',
+	];
+	$this->should_trim = true;
+}
+```
 
 Specifying the DB connection to use:
 
-	public function __construct()
-	{
-		$this->table = 'users';
-		$this->connection = 'my_connection';
-		$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
-	}
+```php
+public function __construct()
+{
+	$this->table = 'users';
+	$this->connection = 'my_connection';
+	$this->filename = base_path().'/database/seeds/csvs/your_csv.csv';
+}
+```
 
 ### Migration Guide
 
