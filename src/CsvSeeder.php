@@ -146,21 +146,22 @@ class CsvSeeder extends Seeder
     }
 
     /**
-     * Collect data from a given CSV file and return as array
+     * Reads all rows of a given CSV and imports the data.
      *
      * @param string $filename
      * @param string $deliminator
-     * @return array
+     * @return bool  Whether or not the import completed successfully.
      */
-    public function seedFromCSV(string $filename, string $deliminator = ","): array
+    public function seedFromCSV(string $filename, string $deliminator = ","): bool
     {
         $handle = $this->openCSV($filename);
 
         // CSV doesn't exist or couldn't be read from.
         if ($handle === false) {
-            return [];
+            return false;
         }
 
+        $success = true;
         $row_count = 0;
         $data = [];
         $mapping = $this->mapping ?: [];
@@ -196,7 +197,7 @@ class CsvSeeder extends Seeder
 
             // Chunk size reached, insert
             if (++$row_count == $this->insert_chunk_size) {
-                $this->insert($data);
+                $success = $success && $this->insert($data);
                 $row_count = 0;
                 // clear the data array explicitly when it was inserted so
                 // that nothing is left, otherwise a leftover scenario can
@@ -208,12 +209,12 @@ class CsvSeeder extends Seeder
         // Insert any leftover rows
         //check if the data array explicitly if there are any values left to be inserted, if insert them
         if (count($data)) {
-            $this->insert($data);
+            $success = $success && $this->insert($data);
         }
 
         fclose($handle);
 
-        return $data;
+        return $success;
     }
 
     /**
@@ -265,7 +266,7 @@ class CsvSeeder extends Seeder
     /**
      * Read a CSV row into a DB insertable array
      *
-     * @param array $row        List of CSV columns
+     * @param array $row        A row of data to read
      * @param array $mapping    Array of csvCol => dbCol
      * @return array
      */

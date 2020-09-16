@@ -19,6 +19,7 @@ class CreateTestsUsersTable extends Migration
             $table->string('password')->default('');
             $table->string('address')->default('');
             $table->integer('age')->default(0);
+            $table->timestamps();
         });
     }
     /**

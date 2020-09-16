@@ -231,6 +231,8 @@ class CsvTest extends \Orchestra\Testbench\TestCase
             'last_name' => 'Abeson',
             'email' => 'abe.abeson@foo.com',
             'age' => 50,
+            'created_at' => null,
+            'updated_at' => null,
         ]);
         $this->assertDatabaseHas('tests_users', [
             'id' => 3,
@@ -238,7 +240,64 @@ class CsvTest extends \Orchestra\Testbench\TestCase
             'last_name' => 'Charlyson',
             'email' => 'charly.charlyson@foo.com',
             'age' => 52,
+            'created_at' => null,
+            'updated_at' => null,
         ]);
+    }
+
+    /** @test */
+    public function it_imports_with_timestamps()
+    {
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
+        $seeder->table = 'tests_users';
+        $seeder->filename = __DIR__ . '/csvs/users.csv';
+        $seeder->timestamps = true;
+        $seeder->run();
+
+        // Make sure timestamps were created
+        $this->assertTrue(strlen($seeder->created_at) > 0);
+        $this->assertTrue(strlen($seeder->updated_at) > 0);
+
+        // Make sure the rows imported
+        $this->assertDatabaseHas('tests_users', [
+            'id' => 1,
+            'first_name' => 'Abe',
+            'last_name' => 'Abeson',
+            'email' => 'abe.abeson@foo.com',
+            'age' => 50,
+            'created_at' => $seeder->created_at,
+            'updated_at' => $seeder->updated_at,
+        ]);
+        $this->assertDatabaseHas('tests_users', [
+            'id' => 3,
+            'first_name' => 'Charly',
+            'last_name' => 'Charlyson',
+            'email' => 'charly.charlyson@foo.com',
+            'age' => 52,
+            'created_at' => $seeder->created_at,
+            'updated_at' => $seeder->updated_at,
+        ]);
+    }
+
+    /** @test */
+    public function it_returns_insert_success()
+    {
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
+        $seeder->table = 'tests_users';
+
+        $expected = true;
+        $actual = $seeder->insert([
+            'id' => 1,
+            'first_name' => 'Abe',
+        ]);
+        $this->assertEquals($actual, $expected);
+
+        $expected = false;
+        $actual = $seeder->insert([
+            'id' => 1,
+            'non_existent_column' => 'Abe',
+        ]);
+        $this->assertEquals($actual, $expected);
     }
 
     /** @test */
@@ -247,7 +306,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
         $seeder->table = 'tests_users';
 
-        // Test default connection works
+        // Default connection works
         $seeder->insert(['id' => 1, 'first_name' => 'Aaron']);
         $this->assertDatabaseHas('tests_users', [
             'id' => 1,
@@ -257,7 +316,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
         // Reset users table
         \DB::table('tests_users')->truncate();
 
-        // Test inserting into a different connection
+        // Inserting into a different connection
         $seeder->connection = 'some_connection_that_doesnt_exist';
         $seeder->insert(['id' => 1, 'first_name' => 'Aaron']);
         $this->assertDatabaseMissing('tests_users', [
