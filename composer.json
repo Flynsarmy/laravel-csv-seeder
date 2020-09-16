@@ -23,6 +23,13 @@
             "Flynsarmy\\CsvSeeder\\Tests\\": "tests"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Flynsarmy\\CsvSeeder\\CsvSeederServiceProvider"
+            ]
+        }
+    },
     "minimum-stability": "dev",
     "require-dev": {
         "orchestra/testbench": "6.*",
