@@ -40,8 +40,11 @@ jobs:
     - name: Install Dependencies (PHP vendors)
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --dev
 
-    - name: Run code quality checks
+    - name: Run code linter
       run: composer phpcs
+
+    - name: Run code quality checks
+      run: composer phpstan
 
     - name: Execute tests via PHPUnit
       run: composer phpunit
