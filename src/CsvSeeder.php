@@ -97,10 +97,10 @@ class CsvSeeder extends Seeder
         // Cache created_at and updated_at if we need to
         if ($this->timestamps) {
             if (!$this->created_at) {
-                $this->created_at = Carbon::now()->toString();
+                $this->created_at = Carbon::now()->toIso8601String();
             }
             if (!$this->updated_at) {
-                $this->updated_at = Carbon::now()->toString();
+                $this->updated_at = Carbon::now()->toIso8601String();
             }
         }
 
