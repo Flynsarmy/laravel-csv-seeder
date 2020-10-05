@@ -61,7 +61,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     public function it_removes_unused_hash_columns()
     {
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
-        
+
         // Retain 'password' hashable
         $seeder->hashable = ['password'];
         $mapping = [
