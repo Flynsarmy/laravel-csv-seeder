@@ -93,6 +93,28 @@ class CsvTest extends \Orchestra\Testbench\TestCase
     }
 
     /** @test */
+    public function it_maps_from_title_row()
+    {
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
+        $seeder->table = 'tests_users';
+
+        // First 3 columns of DB
+        $actual = $seeder->createMappingFromRow(['id', 'first_name', 'last_name']);
+        $expected = [0 => 'id', 1 => 'first_name', 2 => 'last_name'];
+        $this->assertEquals($expected, $actual);
+
+        // Random columns of DB
+        $actual = $seeder->createMappingFromRow(['id', 'last_name', 'address']);
+        $expected = [0 => 'id', 1 => 'last_name', 2 => 'address'];
+        $this->assertEquals($expected, $actual);
+
+        // Include a column that doesn't exist
+        $actual = $seeder->createMappingFromRow(['id', 'last_name', 'this_col_doesnt_exist']);
+        $expected = [0 => 'id', 1 => 'last_name'];
+        $this->assertEquals($expected, $actual);
+    }
+
+    /** @test */
     public function it_reads_to_mapping_correctly()
     {
         $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
