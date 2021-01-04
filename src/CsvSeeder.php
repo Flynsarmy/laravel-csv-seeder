@@ -3,8 +3,9 @@
 namespace Flynsarmy\CsvSeeder;
 
 use App;
-use Log;
 use DB;
+use Exception;
+use Log;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Schema;
@@ -151,6 +152,7 @@ class CsvSeeder extends Seeder
      * @param string $filename
      * @param string $deliminator
      * @return bool  Whether or not the import completed successfully.
+     * @throws Exception
      */
     public function seedFromCSV(string $filename, string $deliminator = ","): bool
     {
@@ -158,7 +160,7 @@ class CsvSeeder extends Seeder
 
         // CSV doesn't exist or couldn't be read from.
         if ($handle === false) {
-            return false;
+            throw new Exception("CSV insert failed: CSV " . $filename . " does not exist or is not readable.");
         }
 
         $success = true;
