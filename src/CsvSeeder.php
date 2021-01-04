@@ -222,8 +222,8 @@ class CsvSeeder extends Seeder
     /**
      * Creates a CSV->DB column mapping from the given CSV row.
      *
-     * @param array $row
-     * @return array
+     * @param array $row  List of DB columns to insert into
+     * @return array  List of DB fields to insert into
      */
     public function createMappingFromRow(array $row): array
     {
