@@ -5,7 +5,3 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     paths:
         - src
-    ignoreErrors:
-        # Somewhere between Oct 5 2020 and Jan 4 2021, Larastan made a change
-        # that resulted in this method call erroring. Just ignore it I guess?
-        - '#DB::getSchemaBuilder#'
