@@ -36,6 +36,11 @@ class CsvTest extends \Orchestra\Testbench\TestCase
             'database' => ':memory:',
             'prefix'   => '',
         ]);
+        $app['config']->set('database.connections.csvSeederTest2', [
+            'driver'   => 'sqlite',
+            'database' => ':memory:',
+            'prefix'   => '',
+        ]);
     }
 
     /** @test */
@@ -435,5 +440,35 @@ class CsvTest extends \Orchestra\Testbench\TestCase
             'address' => '',
             'age' => 54
         ]);
+    }
+    /** @test */
+    public function it_imports_with_non_default_connection()
+    {
+        $seeder = new \Flynsarmy\CsvSeeder\CsvSeeder();
+        $seeder->table = 'tests_users2';
+        $seeder->filename = __DIR__ . '/csvs/users.csv';
+        $seeder->connection = 'csvSeederTest2';
+        $seeder->hashable = [];
+        $seeder->run();
+
+        // Make sure the rows imported
+        $this->assertDatabaseHas('tests_users2', [
+            'id' => 1,
+            'first_name' => 'Abe',
+            'last_name' => 'Abeson',
+            'email' => 'abe.abeson@foo.com',
+            'age' => 50,
+            'created_at' => null,
+            'updated_at' => null,
+        ], 'csvSeederTest2');
+        $this->assertDatabaseHas('tests_users2', [
+            'id' => 3,
+            'first_name' => 'Charly',
+            'last_name' => 'Charlyson',
+            'email' => 'charly.charlyson@foo.com',
+            'age' => 52,
+            'created_at' => null,
+            'updated_at' => null,
+        ], 'csvSeederTest2');
     }
 }
