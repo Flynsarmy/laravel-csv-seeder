@@ -232,7 +232,7 @@ class CsvSeeder extends Seeder
 
         // skip csv columns that don't exist in the database
         foreach ($mapping as $index => $fieldname) {
-            if (!DB::getSchemaBuilder()->hasColumn($this->table, $fieldname)) {
+            if (!DB::connection($this->connection)->getSchemaBuilder()->hasColumn($this->table, $fieldname)) {
                 if (isset($mapping[$index])) {
                     unset($mapping[$index]);
                 }
