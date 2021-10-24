@@ -71,8 +71,8 @@ class CsvSeeder extends Seeder
      * created_at and updated_at values to be added to each row. Only used if
      * $this->timestamps is true
      */
-    public string $created_at = '';
-    public string $updated_at = '';
+    public ?Carbon $created_at = null;
+    public ?Carbon $updated_at = null;
 
     /**
      * The mapping of CSV to DB column. If not specified manually, the first
@@ -98,10 +98,10 @@ class CsvSeeder extends Seeder
         // Cache created_at and updated_at if we need to
         if ($this->timestamps) {
             if (!$this->created_at) {
-                $this->created_at = Carbon::now()->toIso8601String();
+                $this->created_at = Carbon::now();
             }
             if (!$this->updated_at) {
-                $this->updated_at = Carbon::now()->toIso8601String();
+                $this->updated_at = Carbon::now();
             }
         }
 

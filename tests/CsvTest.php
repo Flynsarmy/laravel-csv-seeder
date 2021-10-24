@@ -190,7 +190,7 @@ class CsvTest extends \Orchestra\Testbench\TestCase
 
         // Test with timestamps
         $seeder->timestamps = true;
-        $seeder->created_at = \Carbon\Carbon::now()->toString();
+        $seeder->created_at = \Carbon\Carbon::now();
         $seeder->updated_at = $seeder->created_at;
         $actual = $seeder->readRow($row, $mapping);
         $expected = [
